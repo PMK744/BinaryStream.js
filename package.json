@@ -1,0 +1,30 @@
+{
+  "name": "binary-stream",
+  "version": "0.0.0",
+  "description": "Simple package designed to simplify streaming of binary data in Javascript",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "start": "cross-env NODE_ENV=production node dist/index.js",
+    "dev": "cross-env NODE_ENV=development ts-node src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PMK744/BinaryStreamJS.git"
+  },
+  "keywords": [
+    "Binary"
+  ],
+  "author": "PMK744",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PMK744/BinaryStreamJS/issues"
+  },
+  "homepage": "https://github.com/PMK744/BinaryStreamJS#readme",
+  "dependencies": {
+    "cross-env": "^7.0.3",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
+}
