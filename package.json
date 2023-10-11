@@ -4,7 +4,7 @@
   "description": "Simple package designed to simplify streaming of binary data in Javascript",
   "main": "src/index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node tests/index.js",
     "build": "tsc",
     "start": "cross-env NODE_ENV=production node dist/index.js",
     "dev": "cross-env NODE_ENV=development ts-node src/index.ts"
@@ -26,5 +26,14 @@
     "cross-env": "^7.0.3",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
-  }
+  },
+  "typings": "./dist/index.d.ts",
+  "module": "./dist/index.js",
+  "exports": {
+    "import": "./dist/index.js",
+    "require": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ]
 }
