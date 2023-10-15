@@ -4,10 +4,13 @@ BinaryStream.js is a simple package designed to simplify streaming of binary dat
 Development of this package is still very early, and contributions are welcomed!
 
 ## Installing
+
 Installing using npm
 ```npm install binarystream.js```
+
 Installing using yarn
 ```yarn add binarystream.js```
+
 Installing using bun
 ```bun add binarystream.js```
 
