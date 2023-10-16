@@ -366,6 +366,117 @@ class BinaryStream {
   }
 
   /**
+   * Reads a 64 bit ( 8 bytes ) signed big or little endian integer ( -9223372036854775808 to 9223372036854775807 )
+   * @returns {bigint}
+   */
+  public readInt64(endian: Endianness = Endianness.Big): bigint {
+    const value = endian === Endianness.Big
+      ? BigInt(this.readByte()) << 56n |
+        BigInt(this.readByte()) << 48n |
+        BigInt(this.readByte()) << 40n |
+        BigInt(this.readByte()) << 32n |
+        BigInt(this.readByte()) << 24n |
+        BigInt(this.readByte()) << 16n |
+        BigInt(this.readByte()) << 8n |
+        BigInt(this.readByte())
+      : BigInt(this.readByte()) |
+        BigInt(this.readByte()) << 8n |
+        BigInt(this.readByte()) << 16n |
+        BigInt(this.readByte()) << 24n |
+        BigInt(this.readByte()) << 32n |
+        BigInt(this.readByte()) << 40n |
+        BigInt(this.readByte()) << 48n |
+        BigInt(this.readByte()) << 56n
+    
+    // TODO: Fix this
+    //if (value < -9223372036854775808n || value > 9223372036854775807n) return null
+
+    return value
+  }
+
+  /**
+   * Writes a 64 bit ( 8 bytes ) signed big or little endian integer ( -9223372036854775808 to 9223372036854775807 )
+   * @param value 
+   */
+  public writeInt64(value: bigint, endian: Endianness = Endianness.Big): void {
+    if (value < -9223372036854775808n || value > 9223372036854775807n) throw Error('Value must be between -9223372036854775808 and 9223372036854775807')
+    if (endian === Endianness.Big) {
+      this.writeByte(Number(value >> 56n))
+      this.writeByte(Number(value >> 48n))
+      this.writeByte(Number(value >> 40n))
+      this.writeByte(Number(value >> 32n))
+      this.writeByte(Number(value >> 24n))
+      this.writeByte(Number(value >> 16n))
+      this.writeByte(Number(value >> 8n))
+      this.writeByte(Number(value))
+    } else {
+      this.writeByte(Number(value))
+      this.writeByte(Number(value >> 8n))
+      this.writeByte(Number(value >> 16n))
+      this.writeByte(Number(value >> 24n))
+      this.writeByte(Number(value >> 32n))
+      this.writeByte(Number(value >> 40n))
+      this.writeByte(Number(value >> 48n))
+      this.writeByte(Number(value >> 56n))
+    }
+  }
+
+  /**
+   * Reads a 64 bit ( 8 bytes ) unsigned big or little endian integer ( 0 to 18446744073709551615 )
+   * @returns {bigint}
+   */
+  public readUInt64(endian: Endianness = Endianness.Big): bigint {
+    const value = endian === Endianness.Big
+      ? BigInt(this.readByte()) << 56n |
+        BigInt(this.readByte()) << 48n |
+        BigInt(this.readByte()) << 40n |
+        BigInt(this.readByte()) << 32n |
+        BigInt(this.readByte()) << 24n |
+        BigInt(this.readByte()) << 16n |
+        BigInt(this.readByte()) << 8n |
+        BigInt(this.readByte())
+      : BigInt(this.readByte()) |
+        BigInt(this.readByte()) << 8n |
+        BigInt(this.readByte()) << 16n |
+        BigInt(this.readByte()) << 24n |
+        BigInt(this.readByte()) << 32n |
+        BigInt(this.readByte()) << 40n |
+        BigInt(this.readByte()) << 48n |
+        BigInt(this.readByte()) << 56n
+
+    if (value < 0n || value > 18446744073709551615n) return null
+
+    return value
+  }
+
+  /**
+   * Writes a 64 bit ( 8 bytes ) unsigned big or little endian integer ( 0 to 18446744073709551615 )
+   * @param value 
+   */
+  public writeUInt64(value: bigint, endian: Endianness = Endianness.Big): void {
+    if (value < 0n || value > 18446744073709551615n) throw Error('Value must be between 0 and 18446744073709551615')
+    if (endian === Endianness.Big) {
+      this.writeByte(Number(value >> 56n))
+      this.writeByte(Number(value >> 48n))
+      this.writeByte(Number(value >> 40n))
+      this.writeByte(Number(value >> 32n))
+      this.writeByte(Number(value >> 24n))
+      this.writeByte(Number(value >> 16n))
+      this.writeByte(Number(value >> 8n))
+      this.writeByte(Number(value))
+    } else {
+      this.writeByte(Number(value))
+      this.writeByte(Number(value >> 8n))
+      this.writeByte(Number(value >> 16n))
+      this.writeByte(Number(value >> 24n))
+      this.writeByte(Number(value >> 32n))
+      this.writeByte(Number(value >> 40n))
+      this.writeByte(Number(value >> 48n))
+      this.writeByte(Number(value >> 56n))
+    }
+  }
+
+  /**
    * Reads a 16 bit ( 2 bytes ) signed big or little endian integer ( -32768 to 32767 )
    * @returns {number}
    */
