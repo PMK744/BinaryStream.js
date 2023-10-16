@@ -81,6 +81,16 @@ class BinaryStream {
   }
 
   /**
+   * Reads the remaining bytes from the stream
+   * @returns {Buffer}
+   */
+  public readRemaining(): Buffer {
+    const bytes = this.binary.slice(this.readOffset)
+    this.readOffset = this.binary.length
+    return Buffer.from(bytes)
+  }
+
+  /**
    * Reads from the stream
    * @param length 
    * @returns {Buffer}
@@ -679,6 +689,68 @@ class BinaryStream {
       this.writeByte(Number(value >> 48n))
       this.writeByte(Number(value >> 56n))
     }
+  }
+
+  /**
+   * Reads a 32 bit ( 4 bytes ) zigzag encoded variable length integer
+   * @returns {number}
+   */
+  public readVarInt(): number {
+    let value = 0
+    let shift = 0
+    let byte = 0
+
+    do {
+      byte = this.readByte()
+      value |= (byte & 0x7F) << shift
+      shift += 7
+    } while (byte & 0x80)
+
+    return value
+  }
+
+  /**
+   * Writes a 32 bit ( 4 bytes ) zigzag encoded variable length integer
+   * @param value 
+   */
+  public writeVarInt(value: number): void {
+    while (value > 0x7F) {
+      this.writeByte((value & 0x7F) | 0x80)
+      value >>= 7
+    }
+
+    this.writeByte(value)
+  }
+
+  /**
+   * Reads a 32 bit ( 4 bytes ) zigzag encoded variable length integer
+   * @returns {number}
+   */
+  public readVarUInt(): number {
+    let value = 0
+    let shift = 0
+    let byte = 0
+
+    do {
+      byte = this.readByte()
+      value |= (byte & 0x7F) << shift
+      shift += 7
+    } while (byte & 0x80)
+
+    return value
+  }
+
+  /**
+   * Writes a 32 bit ( 4 bytes ) zigzag encoded variable length integer
+   * @param value 
+   */
+  public writeVarUInt(value: number): void {
+    while (value > 0x7F) {
+      this.writeByte((value & 0x7F) | 0x80)
+      value >>= 7
+    }
+
+    this.writeByte(value)
   }
 }
 
