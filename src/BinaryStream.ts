@@ -117,6 +117,42 @@ class BinaryStream {
     this.binary[this.writeOffset++] = value
   }
 
+  
+  /**
+   * Reads a boolean
+   * @returns {boolean}
+   */
+  public readBool(): boolean {
+    return Boolean(this.readByte())
+  }
+
+  /**
+   * Writes a boolean
+   * @param value 
+   */
+  public writeBool(value: boolean): void {
+    this.writeByte(Number(value))
+  }
+
+  /**
+   * Reads a string
+   * @returns {string}
+   */
+  public readString(): string {
+    const length = this.readUInt16()
+    const buffer = this.read(length)
+    return buffer.toString()
+  }
+
+  /**
+   * Writes a string
+   * @param value 
+   */
+  public writeString(value: string): void {
+    this.writeUInt16(value.length)
+    this.write(Buffer.from(value))
+  }
+
   /**
    * Reads a signed byte ( -128 to 127 )
    * @returns {number}
@@ -591,38 +627,58 @@ class BinaryStream {
   }
 
   /**
-   * Reads a boolean
-   * @returns {boolean}
+   * Reads a 64 bit ( 8 bytes ) unsigned big or little endian integer ( 0 to 18446744073709551615 )
+   * @returns {bigint}
    */
-  public readBool(): boolean {
-    return Boolean(this.readByte())
+  public readULong(endian: Endianness = Endianness.Big): bigint {
+    const value = endian === Endianness.Big
+      ? BigInt(this.readByte()) << 56n |
+        BigInt(this.readByte()) << 48n |
+        BigInt(this.readByte()) << 40n |
+        BigInt(this.readByte()) << 32n |
+        BigInt(this.readByte()) << 24n |
+        BigInt(this.readByte()) << 16n |
+        BigInt(this.readByte()) << 8n |
+        BigInt(this.readByte())
+      : BigInt(this.readByte()) |
+        BigInt(this.readByte()) << 8n |
+        BigInt(this.readByte()) << 16n |
+        BigInt(this.readByte()) << 24n |
+        BigInt(this.readByte()) << 32n |
+        BigInt(this.readByte()) << 40n |
+        BigInt(this.readByte()) << 48n |
+        BigInt(this.readByte()) << 56n
+
+    if (value < 0n || value > 18446744073709551615n) return null
+
+    return value
   }
 
   /**
-   * Writes a boolean
+   * Writes a 64 bit ( 8 bytes ) unsigned big or little endian integer ( 0 to 18446744073709551615 )
    * @param value 
    */
-  public writeBool(value: boolean): void {
-    this.writeByte(Number(value))
-  }
-
-  /**
-   * Reads a string
-   * @returns {string}
-   */
-  public readString(): string {
-    const length = this.readUInt16()
-    const buffer = this.read(length)
-    return buffer.toString()
-  }
-
-  /**
-   * Writes a string
-   * @param value 
-   */
-  public writeString(value: string): void {
-    this.writeUInt16(value.length)
-    this.write(Buffer.from(value))
+  public writeULong(value: bigint, endian: Endianness = Endianness.Big): void {
+    if (value < 0n || value > 18446744073709551615n) throw Error('Value must be between 0 and 18446744073709551615')
+    if (endian === Endianness.Big) {
+      this.writeByte(Number(value >> 56n))
+      this.writeByte(Number(value >> 48n))
+      this.writeByte(Number(value >> 40n))
+      this.writeByte(Number(value >> 32n))
+      this.writeByte(Number(value >> 24n))
+      this.writeByte(Number(value >> 16n))
+      this.writeByte(Number(value >> 8n))
+      this.writeByte(Number(value))
+    } else {
+      this.writeByte(Number(value))
+      this.writeByte(Number(value >> 8n))
+      this.writeByte(Number(value >> 16n))
+      this.writeByte(Number(value >> 24n))
+      this.writeByte(Number(value >> 32n))
+      this.writeByte(Number(value >> 40n))
+      this.writeByte(Number(value >> 48n))
+      this.writeByte(Number(value >> 56n))
+    }
   }
 }
 
