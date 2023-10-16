@@ -1,3 +1,5 @@
+import { Endianness } from './Endianness'
+
 class BinaryStream {
   private readonly binary: number[]
   private readOffset: number
@@ -158,12 +160,13 @@ class BinaryStream {
   }
 
   /**
-   * Reads a 16 bit ( 2 bytes ) signed big eddian integer ( -32768 to 32767 )
+   * Reads a 16 bit ( 2 bytes ) signed big or little endian integer ( -32768 to 32767 )
    * @returns {number}
    */
-  public readInt16(): number {
-    const value = this.readByte() << 8 |
-    this.readByte()
+  public readInt16(endian: Endianness = Endianness.Big): number {
+    const value = endian === Endianness.Big
+      ? this.readByte() << 8 | this.readByte()
+      : this.readByte() | this.readByte() << 8
 
     if (value < -32768 || value > 32767) return null
 
@@ -171,22 +174,28 @@ class BinaryStream {
   }
 
   /**
-   * Writes a 16 bit ( 2 bytes ) signed big eddian integer ( -32768 to 32767 )
+   * Writes a 16 bit ( 2 bytes ) signed big or little endian integer ( -32768 to 32767 )
    * @param value 
    */
-  public writeInt16(value: number): void {
+  public writeInt16(value: number, endian: Endianness = Endianness.Big): void {
     if (value < -32768 || value > 32767) throw Error('Value must be between -32768 and 32767')
-    this.writeByte(value >> 8)
-    this.writeByte(value & 0xFF)
+    if (endian === Endianness.Big) {
+      this.writeByte(value >> 8)
+      this.writeByte(value & 0xFF)
+    } else {
+      this.writeByte(value & 0xFF)
+      this.writeByte(value >> 8)
+    }
   }
 
   /**
-   * Reads a 16 bit ( 2 bytes ) unsigned big eddian integer ( 0 to 65535 )
+   * Reads a 16 bit ( 2 bytes ) unsigned big or little endian integer ( 0 to 65535 )
    * @returns {number}
    */
-  public readUInt16(): number {
-    const value = this.readByte() << 8 |
-    this.readByte()
+  public readUInt16(endian: Endianness = Endianness.Big): number {
+    const value = endian === Endianness.Big
+      ? this.readByte() << 8 | this.readByte()
+      : this.readByte() | this.readByte() << 8
 
     if (value < 0 || value > 65535) return null
 
@@ -194,24 +203,104 @@ class BinaryStream {
   }
 
   /**
-   * Writes a 16 bit ( 2 bytes ) unsigned big eddian integer ( 0 to 65535 )
+   * Writes a 16 bit ( 2 bytes ) unsigned big or little endian integer ( 0 to 65535 )
    * @param value 
    */
-  public writeUInt16(value: number): void {
+  public writeUInt16(value: number, endian: Endianness = Endianness.Big): void {
     if (value < 0 || value > 65535) throw Error('Value must be between 0 and 65535')
-    this.writeByte(value >> 8)
-    this.writeByte(value & 0xFF)
+    if (endian === Endianness.Big) {
+      this.writeByte(value >> 8)
+      this.writeByte(value & 0xFF)
+    } else {
+      this.writeByte(value & 0xFF)
+      this.writeByte(value >> 8)
+    }
   }
 
   /**
-   * Reads a 32 bit ( 4 bytes ) signed big eddian integer ( -2147483648 to 2147483647 )
+  * Reads a 24 bit ( 3 bytes ) signed big or little endian integer ( -8388608 to 8388607 )
+  * @returns {number}
+  */
+  public readInt24(endian: Endianness = Endianness.Big): number {
+    const value = endian === Endianness.Big
+      ? this.readByte() << 16 |
+        this.readByte() << 8 |
+        this.readByte()
+      : this.readByte() |
+        this.readByte() << 8 |
+        this.readByte() << 16
+
+    if (value < -8388608 || value > 8388607) return null
+
+    return value
+  }
+
+  /**
+   * Writes a 24 bit ( 3 bytes ) signed big or little endian integer ( -8388608 to 8388607 )
+   * @param value 
+   */
+  public writeInt24(value: number, endian: Endianness = Endianness.Big): void {
+    if (value < -8388608 || value > 8388607) throw Error('Value must be between -8388608 and 8388607')
+    if (endian === Endianness.Big) {
+      this.writeByte(value >> 16)
+      this.writeByte(value >> 8)
+      this.writeByte(value)
+    } else {
+      this.writeByte(value)
+      this.writeByte(value >> 8)
+      this.writeByte(value >> 16)
+    }
+  }
+
+  /**
+   * Reads a 24 bit ( 3 bytes ) unsigned big or little endian integer ( 0 to 16777215 )
    * @returns {number}
    */
-  public readInt32(): number {
-    const value = this.readByte() << 24 |
-    this.readByte() << 16 |
-    this.readByte() << 8 |
-    this.readByte()
+  public readUInt24(endian: Endianness = Endianness.Big): number {
+    const value = endian === Endianness.Big
+      ? this.readByte() << 16 |
+        this.readByte() << 8 |
+        this.readByte()
+      : this.readByte() |
+        this.readByte() << 8 |
+        this.readByte() << 16
+
+    if (value < 0 || value > 16777215) return null
+
+    return value
+  }
+
+  /**
+   * Writes a 24 bit ( 3 bytes ) unsigned big or little endian integer ( 0 to 16777215 )
+   * @param value 
+   */
+  public writeUInt24(value: number, endian: Endianness = Endianness.Big): void {
+    if (value < 0 || value > 16777215) throw Error('Value must be between 0 and 16777215')
+    if (endian === Endianness.Big) {
+      this.writeByte(value >> 16)
+      this.writeByte(value >> 8)
+      this.writeByte(value)
+    } else {
+      this.writeByte(value)
+      this.writeByte(value >> 8)
+      this.writeByte(value >> 16)
+    }
+  }
+
+  /**
+   * Reads a 32 bit ( 4 bytes ) signed big or little endian integer ( -2147483648 to 2147483647 )
+   * @returns {number}
+   */
+  public readInt32(endian: Endianness = Endianness.Big): number {
+    const value = endian === Endianness.Big
+      ? this.readByte() << 24 |
+        this.readByte() << 16 |
+        this.readByte() << 8 |
+        this.readByte()
+      : this.readByte() |
+        this.readByte() << 8 |
+        this.readByte() << 16 |
+        this.readByte() << 24
 
     if (value < -2147483648 || value > 2147483647) return null
 
@@ -222,23 +311,35 @@ class BinaryStream {
    * Writes a 32 bit ( 4 bytes ) signed big eddian integer ( -2147483648 to 2147483647 )
    * @param value 
    */
-  public writeInt32(value: number): void {
+  public writeInt32(value: number, endian: Endianness = Endianness.Big): void {
     if (value < -2147483648 || value > 2147483647) throw Error('Value must be between -2147483648 and 2147483647')
-    this.writeByte(value >> 24)
-    this.writeByte(value >> 16)
-    this.writeByte(value >> 8)
-    this.writeByte(value)
+    if (endian === Endianness.Big) {
+      this.writeByte(value >> 24)
+      this.writeByte(value >> 16)
+      this.writeByte(value >> 8)
+      this.writeByte(value)
+    } else {
+      this.writeByte(value)
+      this.writeByte(value >> 8)
+      this.writeByte(value >> 16)
+      this.writeByte(value >> 24)
+    }
   }
 
   /**
-   * Reads a 32 bit ( 4 bytes ) unsigned big eddian integer ( 0 to 4294967295 )
+   * Reads a 32 bit ( 4 bytes ) unsigned big or little endian integer ( 0 to 4294967295 )
    * @returns {number}
    */
-  public readUInt32(): number {
-    const value = this.readByte() << 24 |
-    this.readByte() << 16 |
-    this.readByte() << 8 |
-    this.readByte()
+  public readUInt32(endian: Endianness = Endianness.Big): number {
+    const value = endian === Endianness.Big
+      ? this.readByte() << 24 |
+        this.readByte() << 16 |
+        this.readByte() << 8 |
+        this.readByte()
+      : this.readByte() |
+        this.readByte() << 8 |
+        this.readByte() << 16 |
+        this.readByte() << 24
 
     if (value < 0 || value > 4294967295) return null
 
@@ -249,21 +350,29 @@ class BinaryStream {
    * Writes a 32 bit ( 4 bytes ) unsigned big eddian integer ( 0 to 4294967295 )
    * @param value 
    */
-  public writeUInt32(value: number): void {
+  public writeUInt32(value: number, endian: Endianness = Endianness.Big): void {
     if (value < 0 || value > 4294967295) throw Error('Value must be between 0 and 4294967295')
-    this.writeByte(value >> 24)
-    this.writeByte(value >> 16)
-    this.writeByte(value >> 8)
-    this.writeByte(value)
+    if (endian === Endianness.Big) {
+      this.writeByte(value >> 24)
+      this.writeByte(value >> 16)
+      this.writeByte(value >> 8)
+      this.writeByte(value)
+    } else {
+      this.writeByte(value)
+      this.writeByte(value >> 8)
+      this.writeByte(value >> 16)
+      this.writeByte(value >> 24)
+    }
   }
 
   /**
-   * Reads a 16 bit ( 2 bytes ) signed big eddian integer ( -32768 to 32767 )
+   * Reads a 16 bit ( 2 bytes ) signed big or little endian integer ( -32768 to 32767 )
    * @returns {number}
    */
-  public readShort(): number {
-    const value = this.readByte() << 8 |
-    this.readByte()
+  public readShort(endian: Endianness = Endianness.Big): number {
+    const value = endian === Endianness.Big
+      ? this.readByte() << 8 | this.readByte()
+      : this.readByte() | this.readByte() << 8
 
     if (value < -32768 || value > 32767) return null
 
@@ -271,22 +380,28 @@ class BinaryStream {
   }
 
   /**
-   * Writes a 16 bit ( 2 bytes ) signed big eddian integer ( -32768 to 32767 )
+   * Writes a 16 bit ( 2 bytes ) signed big or little endian integer ( -32768 to 32767 )
    * @param value 
    */
-  public writeShort(value: number): void {
+  public writeShort(value: number, endian: Endianness = Endianness.Big): void {
     if (value < -32768 || value > 32767) throw Error('Value must be between -32768 and 32767')
-    this.writeByte(value >> 8)
-    this.writeByte(value & 0xFF)
+    if (endian === Endianness.Big) {
+      this.writeByte(value >> 8)
+      this.writeByte(value & 0xFF)
+    } else {
+      this.writeByte(value & 0xFF)
+      this.writeByte(value >> 8)
+    }
   }
 
   /**
-   *  Reads a 16 bit ( 2 bytes ) unsigned big eddian integer ( 0 to 65535 )
+   *  Reads a 16 bit ( 2 bytes ) unsigned big or little endian integer ( 0 to 65535 )
    * @returns {number}
    */
-  public readUShort(): number {
-    const value = this.readByte() << 8 |
-    this.readByte()
+  public readUShort(endian: Endianness = Endianness.Big): number {
+    const value = endian === Endianness.Big
+      ? this.readByte() << 8 | this.readByte()
+      : this.readByte() | this.readByte() << 8
 
     if (value < 0 || value > 65535) return null
 
@@ -294,49 +409,74 @@ class BinaryStream {
   }
 
   /**
-   * Writes a 16 bit ( 2 bytes ) unsigned big eddian integer ( 0 to 65535 )
+   * Writes a 16 bit ( 2 bytes ) unsigned big or little endian integer ( 0 to 65535 )
    * @param value 
    */
-  public writeUShort(value: number): void {
+  public writeUShort(value: number, endian: Endianness = Endianness.Big): void {
     if (value < 0 || value > 65535) throw Error('Value must be between 0 and 65535')
-    this.writeByte(value >> 8)
-    this.writeByte(value & 0xFF)
+    if (endian === Endianness.Big) {
+      this.writeByte(value >> 8)
+      this.writeByte(value & 0xFF)
+    } else {
+      this.writeByte(value & 0xFF)
+      this.writeByte(value >> 8)
+    }
   }
 
   /**
-   * Reads a 64 bit ( 8 bytes ) signed big eddian integer ( -9223372036854775808 to 9223372036854775807 )
+   * Reads a 64 bit ( 8 bytes ) signed big or little endian integer ( -9223372036854775808 to 9223372036854775807 )
    * @returns {bigint}
    */
-  public readLong(): bigint {
-    const value = BigInt(this.readByte()) << 56n |
-    BigInt(this.readByte()) << 48n |
-    BigInt(this.readByte()) << 40n |
-    BigInt(this.readByte()) << 32n |
-    BigInt(this.readByte()) << 24n |
-    BigInt(this.readByte()) << 16n |
-    BigInt(this.readByte()) << 8n |
-    BigInt(this.readByte())
+  public readLong(endian: Endianness = Endianness.Big): bigint {
+    const value = endian === Endianness.Big
+      ? BigInt(this.readByte()) << 56n |
+        BigInt(this.readByte()) << 48n |
+        BigInt(this.readByte()) << 40n |
+        BigInt(this.readByte()) << 32n |
+        BigInt(this.readByte()) << 24n |
+        BigInt(this.readByte()) << 16n |
+        BigInt(this.readByte()) << 8n |
+        BigInt(this.readByte())
+      : BigInt(this.readByte()) |
+        BigInt(this.readByte()) << 8n |
+        BigInt(this.readByte()) << 16n |
+        BigInt(this.readByte()) << 24n |
+        BigInt(this.readByte()) << 32n |
+        BigInt(this.readByte()) << 40n |
+        BigInt(this.readByte()) << 48n |
+        BigInt(this.readByte()) << 56n
 
-    // TODO: figure out how to check if value is between -9223372036854775808 and 9223372036854775807
+    // TODO: Fix this
     //if (value < -9223372036854775808n || value > 9223372036854775807n) return null
 
     return value
   }
 
   /**
-   * Writes a 64 bit ( 8 bytes ) signed big eddian integer ( -9223372036854775808 to 9223372036854775807 )
+   * Writes a 64 bit ( 8 bytes ) signed big or little endian integer ( -9223372036854775808 to 9223372036854775807 )
    * @param value 
    */
-  public writeLong(value: bigint): void {
+  public writeLong(value: bigint, endian: Endianness = Endianness.Big): void {
     if (value < -9223372036854775808n || value > 9223372036854775807n) throw Error('Value must be between -9223372036854775808 and 9223372036854775807')
-    this.writeByte(Number(value >> 56n))
-    this.writeByte(Number(value >> 48n))
-    this.writeByte(Number(value >> 40n))
-    this.writeByte(Number(value >> 32n))
-    this.writeByte(Number(value >> 24n))
-    this.writeByte(Number(value >> 16n))
-    this.writeByte(Number(value >> 8n))
-    this.writeByte(Number(value))
+    if (endian === Endianness.Big) {
+      this.writeByte(Number(value >> 56n))
+      this.writeByte(Number(value >> 48n))
+      this.writeByte(Number(value >> 40n))
+      this.writeByte(Number(value >> 32n))
+      this.writeByte(Number(value >> 24n))
+      this.writeByte(Number(value >> 16n))
+      this.writeByte(Number(value >> 8n))
+      this.writeByte(Number(value))
+    } else {
+      this.writeByte(Number(value))
+      this.writeByte(Number(value >> 8n))
+      this.writeByte(Number(value >> 16n))
+      this.writeByte(Number(value >> 24n))
+      this.writeByte(Number(value >> 32n))
+      this.writeByte(Number(value >> 40n))
+      this.writeByte(Number(value >> 48n))
+      this.writeByte(Number(value >> 56n))
+    }
   }
 
   /**
@@ -372,106 +512,6 @@ class BinaryStream {
   public writeString(value: string): void {
     this.writeUInt16(value.length)
     this.write(Buffer.from(value))
-  }
-
-  /**
-   * Reads a 24 bit ( 3 bytes ) signed big eddian integer ( -8388608 to 8388607 )
-   * @returns {number}
-   */
-  public readInt24BE(): number {
-    const value = this.readByte() << 16 |
-    this.readByte() << 8 |
-    this.readByte()
-
-    if (value < -8388608 || value > 8388607) return null
-
-    return value
-  }
-
-  /**
-   * Writes a 24 bit ( 3 bytes ) signed big eddian integer ( -8388608 to 8388607 )
-   * @param value 
-   */
-  public writeInt24BE(value: number): void {
-    if (value < -8388608 || value > 8388607) throw Error('Value must be between -8388608 and 8388607')
-    this.writeByte(value >> 16)
-    this.writeByte(value >> 8)
-    this.writeByte(value)
-  }
-
-  /**
-   * Reads a 24 bit ( 3 bytes ) unsigned big eddian integer ( 0 to 16777215 )
-   * @returns {number}
-   */
-  public readUInt24BE(): number {
-    const value = this.readByte() << 16 |
-    this.readByte() << 8 |
-    this.readByte()
-
-    if (value < 0 || value > 16777215) return null
-
-    return value
-  }
-
-  /**
-   * Writes a 24 bit ( 3 bytes ) unsigned big eddian integer ( 0 to 16777215 )
-   * @param value 
-   */
-  public writeUInt24BE(value: number): void {
-    if (value < 0 || value > 16777215) throw Error('Value must be between 0 and 16777215')
-    this.writeByte(value >> 16)
-    this.writeByte(value >> 8)
-    this.writeByte(value)
-  }
-
-  /**
-   * Reads a 24 bit ( 3 bytes ) signed little eddian integer ( -8388608 to 8388607 )
-   * @returns {number}
-   */
-  public readInt24LE(): number {
-    const value = this.readByte() |
-    this.readByte() << 8 |
-    this.readByte() << 16
-
-    if (value < -8388608 || value > 8388607) return null
-
-    return value
-  }
-
-  /**
-   * Writes a 24 bit ( 3 bytes ) signed little eddian integer ( -8388608 to 8388607 )
-   * @param value 
-   */
-  public writeInt24LE(value: number): void {
-    if (value < -8388608 || value > 8388607) throw Error('Value must be between -8388608 and 8388607')
-    this.writeByte(value)
-    this.writeByte(value >> 8)
-    this.writeByte(value >> 16)
-  }
-
-  /**
-   * Reads a 24 bit ( 3 bytes ) unsigned little eddian integer ( 0 to 16777215 )
-   * @returns {number}
-   */
-  public readUInt24LE(): number {
-    const value = this.readByte() |
-    this.readByte() << 8 |
-    this.readByte() << 16
-
-    if (value < 0 || value > 16777215) return null
-
-    return value
-  }
-
-  /**
-   * Writes a 24 bit ( 3 bytes ) unsigned little eddian integer ( 0 to 16777215 )
-   * @param value 
-   */
-  public writeUInt24LE(value: number): void {
-    if (value < 0 || value > 16777215) throw Error('Value must be between 0 and 16777215')
-    this.writeByte(value)
-    this.writeByte(value >> 8)
-    this.writeByte(value >> 16)
   }
 }
 
