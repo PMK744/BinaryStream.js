@@ -164,7 +164,7 @@ class BinaryStream {
   }
 
   /**
-   * Reads a signed byte ( -128 to 127 )
+   * Reads a signed 8 ( 1 byte ) bit integer ( -128 to 127 )
    * @returns {number}
    */
   public readInt8(): number {
@@ -176,7 +176,7 @@ class BinaryStream {
   }
 
   /**
-   * Writes a signed byte ( -128 to 127 )
+   * Writes a signed 8 ( 1 byte ) bit integer ( -128 to 127 )
    * @param value 
    */
   public writeInt8(value: number): void {
@@ -185,7 +185,7 @@ class BinaryStream {
   }
 
   /**
-   * Reads a unsigned byte ( 0 to 255 )
+   * Reads a unsigned 8 ( 1 byte ) bit integer ( 0 to 255 )
    * @returns {number}
    */
   public readUInt8(): number {
@@ -197,7 +197,7 @@ class BinaryStream {
   }
 
   /**
-   * Writes a unsigned byte ( 0 to 255 )
+   * Writes a unsigned 8 ( 1 byte ) bit integer ( 0 to 255 )
    * @param value 
    */
   public writeUInt8(value: number): void {
@@ -692,7 +692,7 @@ class BinaryStream {
   }
 
   /**
-   * Reads a 32 bit ( 4 bytes ) zigzag encoded variable length integer
+   * Reads a 32 bit ( 4 bytes ) signed zigzag encoded variable length integer ( -2147483648 to 2147483647 )
    * @returns {number}
    */
   public readVarInt(): number {
@@ -706,14 +706,17 @@ class BinaryStream {
       shift += 7
     } while (byte & 0x80)
 
+    if (value < -2147483648 || value > 2147483647) return null
+
     return value
   }
 
   /**
-   * Writes a 32 bit ( 4 bytes ) zigzag encoded variable length integer
+   * Writes a 32 bit ( 4 bytes ) signed zigzag encoded variable length integer ( -2147483648 to 2147483647 )
    * @param value 
    */
   public writeVarInt(value: number): void {
+    if (value < -2147483648 || value > 2147483647) throw Error('Value must be between -2147483648 and 2147483647')
     while (value > 0x7F) {
       this.writeByte((value & 0x7F) | 0x80)
       value >>= 7
@@ -723,7 +726,7 @@ class BinaryStream {
   }
 
   /**
-   * Reads a 32 bit ( 4 bytes ) zigzag encoded variable length integer
+   * Reads a 32 bit ( 4 bytes ) unsigned zigzag encoded variable length integer ( 0 to 4294967295 )
    * @returns {number}
    */
   public readVarUInt(): number {
@@ -737,20 +740,42 @@ class BinaryStream {
       shift += 7
     } while (byte & 0x80)
 
+    if (value < 0 || value > 4294967295) return null
+
     return value
   }
 
   /**
-   * Writes a 32 bit ( 4 bytes ) zigzag encoded variable length integer
+   * Writes a 32 bit ( 4 bytes ) unsigned zigzag encoded variable length integer ( 0 to 4294967295 )
    * @param value 
    */
   public writeVarUInt(value: number): void {
+    if (value < 0 || value > 4294967295) throw Error('Value must be between 0 and 4294967295')
     while (value > 0x7F) {
       this.writeByte((value & 0x7F) | 0x80)
       value >>= 7
     }
 
     this.writeByte(value)
+  }
+
+  /**
+   * Reads a 32 bit ( 4 bytes ) IEEE 754 floating point number
+   * @returns {number}
+   */
+  public readFloat(): number {
+    const buffer = this.read(4)
+    return buffer.readFloatBE(0)
+  }
+
+  /**
+   * Writes a 32 bit ( 4 bytes ) IEEE 754 floating point number
+   * @param value 
+   */
+  public writeFloat(value: number): void {
+    const buffer = Buffer.alloc(4)
+    buffer.writeFloatBE(value, 0)
+    this.write(buffer)
   }
 }
 
