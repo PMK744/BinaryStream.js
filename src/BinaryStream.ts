@@ -164,6 +164,25 @@ class BinaryStream {
   }
 
   /**
+   * Reads a 32 bit ( 4 bytes ) IEEE 754 floating point number
+   * @returns {number}
+   */
+  public readFloat(): number {
+    const buffer = this.read(4)
+    return buffer.readFloatBE(0)
+  }
+  
+  /**
+   * Writes a 32 bit ( 4 bytes ) IEEE 754 floating point number
+   * @param value 
+   */
+  public writeFloat(value: number): void {
+    const buffer = Buffer.alloc(4)
+    buffer.writeFloatBE(value, 0)
+    this.write(buffer)
+  }
+
+  /**
    * Reads a signed 8 ( 1 byte ) bit integer ( -128 to 127 )
    * @returns {number}
    */
@@ -758,24 +777,71 @@ class BinaryStream {
 
     this.writeByte(value)
   }
-
+  
   /**
-   * Reads a 32 bit ( 4 bytes ) IEEE 754 floating point number
-   * @returns {number}
+   * Reads a 64 bit ( 8 bytes ) signed zigzag encoded variable length integer ( -9223372036854775808 to 9223372036854775807 )
    */
-  public readFloat(): number {
-    const buffer = this.read(4)
-    return buffer.readFloatBE(0)
+  public readVarLong(): bigint {
+    let value = 0n
+    let shift = 0n
+    let byte = 0
+
+    do {
+      byte = this.readByte()
+      value |= BigInt(byte & 0x7F) << shift
+      shift += 7n
+    } while (byte & 0x80)
+
+    if (value < -9223372036854775808n || value > 9223372036854775807n) return null
+
+    return value
   }
 
   /**
-   * Writes a 32 bit ( 4 bytes ) IEEE 754 floating point number
+   * Writes a 64 bit ( 8 bytes ) signed zigzag encoded variable length integer ( -9223372036854775808 to 9223372036854775807 )
    * @param value 
    */
-  public writeFloat(value: number): void {
-    const buffer = Buffer.alloc(4)
-    buffer.writeFloatBE(value, 0)
-    this.write(buffer)
+  public writeVarLong(value: bigint): void {
+    if (value < -9223372036854775808n || value > 9223372036854775807n) throw Error('Value must be between -9223372036854775808 and 9223372036854775807')
+    while (value > 0x7Fn) {
+      this.writeByte(Number((value & 0x7Fn) | 0x80n))
+      value >>= 7n
+    }
+
+    this.writeByte(Number(value))
+  }
+
+  /**
+   * Reads a 64 bit ( 8 bytes ) unsigned zigzag encoded variable length integer ( 0 to 18446744073709551615 )
+   */
+  public readVarULong(): bigint {
+    let value = 0n
+    let shift = 0n
+    let byte = 0
+
+    do {
+      byte = this.readByte()
+      value |= BigInt(byte & 0x7F) << shift
+      shift += 7n
+    } while (byte & 0x80)
+
+    if (value < 0n || value > 18446744073709551615n) return null
+
+    return value
+  }
+
+  /**
+   * Writes a 64 bit ( 8 bytes ) unsigned zigzag encoded variable length integer ( 0 to 18446744073709551615 )
+   * @param value 
+   */
+  public writeVarULong(value: bigint): void {
+    if (value < 0n || value > 18446744073709551615n) throw Error('Value must be between 0 and 18446744073709551615')
+    while (value > 0x7Fn) {
+      this.writeByte(Number((value & 0x7Fn) | 0x80n))
+      value >>= 7n
+    }
+
+    this.writeByte(Number(value))
   }
 }
 
