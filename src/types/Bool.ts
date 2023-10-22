@@ -1,7 +1,7 @@
 import type { BinaryStream } from '../BinaryStream'
-import { Type } from './Type'
+import { DataType } from './DataType'
 
-export class Bool extends Type {
+export class Bool extends DataType {
   public static read(stream: BinaryStream): boolean {
     return stream.readBool()
   }

@@ -1,7 +1,7 @@
 import type { BinaryStream } from '../BinaryStream'
 import { Endianness } from '../Endianness'
 
-export abstract class Type {
+export abstract class DataType {
   public static read(stream: BinaryStream, endian: Endianness = Endianness.Big): any {
     throw new Error('Not implemented')
   }

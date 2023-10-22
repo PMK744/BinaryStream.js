@@ -1,7 +1,7 @@
 import type { BinaryStream } from '../BinaryStream'
-import { Type } from './Type'
+import { DataType } from './DataType'
 
-export class Byte extends Type {
+export class Byte extends DataType {
   public static read(stream: BinaryStream): number {
     return stream.readByte()
   }

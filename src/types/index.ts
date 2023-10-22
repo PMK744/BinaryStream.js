@@ -1,4 +1,4 @@
-export * from './Type'
+export * from './DataType'
 export * from './Byte'
 export * from './Bool'
 export * from './String'

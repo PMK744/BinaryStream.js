@@ -1,11 +1,11 @@
 import type { BinaryStream } from '../../BinaryStream'
 import { Endianness } from '../../Endianness'
-import { Type } from '../Type'
+import { DataType } from '../DataType'
 
 /**
  * Reads or writes a 64 bit ( 8 byte ) unsigned integer ( 0 to 18446744073709551615 )
  */
-export class UInt64 extends Type {
+export class UInt64 extends DataType {
   public static read(stream: BinaryStream, endian: Endianness): bigint {
     return stream.readUInt64(endian)
   }

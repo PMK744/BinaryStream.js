@@ -1,10 +1,10 @@
 import type { BinaryStream } from '../BinaryStream'
-import { Type } from './Type'
+import { DataType } from './DataType'
 
 /**
  * Still a string, didnt want to extend the String proto
  */
-export class LitString extends Type {
+export class LitString extends DataType {
   public static read(stream: BinaryStream): string {
     return stream.readString()
   }
