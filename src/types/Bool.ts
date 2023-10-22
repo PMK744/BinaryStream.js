@@ -1,6 +1,9 @@
 import type { BinaryStream } from '../BinaryStream'
 import { DataType } from './DataType'
 
+/**
+ * Reads or writes a boolean
+ */
 export class Bool extends DataType {
   public static read(stream: BinaryStream): boolean {
     return stream.readBool()

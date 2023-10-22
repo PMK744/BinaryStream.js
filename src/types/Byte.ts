@@ -1,6 +1,9 @@
 import type { BinaryStream } from '../BinaryStream'
 import { DataType } from './DataType'
 
+/**
+ * Reads or writes a byte
+ */
 export class Byte extends DataType {
   public static read(stream: BinaryStream): number {
     return stream.readByte()

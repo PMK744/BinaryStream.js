@@ -164,6 +164,46 @@ class BinaryStream {
   }
 
   /**
+   * Reads a 32 bit little endian string encoded in ASCII
+   * @returns {string}
+   */
+  public readLittleString(): string {
+    const length = this.readUInt32(Endianness.Little)
+    const buffer = this.read(length)
+
+    return buffer.toString('ascii')
+  }
+
+  /**
+   * Writes a 32 bit little endian string encoded in ASCII
+   * @param value 
+   */
+  public writeLittleString(value: string): void {
+    this.writeUInt32(value.length, Endianness.Little)
+    this.write(Buffer.from(value))
+  }
+
+  /**
+   * Reads a 32 bit big endian string encoded in UTF8
+   * @returns {string}
+   */
+  public readBigString(): string {
+    const length = this.readVarInt()
+    const buffer = this.read(length)
+
+    return buffer.toString('utf8')
+  }
+
+  /**
+   * Writes a 32 bit big endian string encoded in UTF8
+   * @param value 
+   */
+  public writeBigString(value: string): void {
+    this.writeVarInt(value.length)
+    this.write(Buffer.from(value))
+  }
+
+  /**
    * Reads a 32 bit ( 4 bytes ) IEEE 754 floating point number
    * @returns {number}
    */
@@ -780,6 +820,7 @@ class BinaryStream {
   
   /**
    * Reads a 64 bit ( 8 bytes ) signed zigzag encoded variable length integer ( -9223372036854775808 to 9223372036854775807 )
+   * @returns {bigint}
    */
   public readVarLong(): bigint {
     let value = 0n
@@ -813,6 +854,7 @@ class BinaryStream {
 
   /**
    * Reads a 64 bit ( 8 bytes ) unsigned zigzag encoded variable length integer ( 0 to 18446744073709551615 )
+   * @returns {bigint}
    */
   public readVarULong(): bigint {
     let value = 0n
