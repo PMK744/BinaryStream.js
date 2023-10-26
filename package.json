@@ -1,6 +1,6 @@
 {
   "name": "binarystream.js",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Simple package designed to simplify streaming of binary data in Javascript",
   "main": "src/index.ts",
   "scripts": {
