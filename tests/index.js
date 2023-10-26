@@ -4,6 +4,6 @@ const stream = new BinaryStream()
 
 const value = 1234567890
 
-stream.writeInt64(value)
+stream.writeUInt16(65378)
 
-console.log(stream.readInt64()) // 1234567890
+console.log(stream.readInt16())

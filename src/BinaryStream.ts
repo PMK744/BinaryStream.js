@@ -265,9 +265,11 @@ class BinaryStream {
    * @returns {number}
    */
   public readInt8(): number {
-    const value = this.binary[this.readOffset++] || 0
+    let value = this.binary[this.readOffset++] || 0
 
-    if (value < -128 || value > 127) return null
+    if (value < -128 || value > 127) {
+      value = value < 0 ? 256 + value : value - 256
+    }
 
     return value
   }
@@ -277,7 +279,9 @@ class BinaryStream {
    * @param value 
    */
   public writeInt8(value: number): void {
-    if (value < -128 || value > 127) throw Error('Value must be between -128 and 127')
+    if (value < -128 || value > 127) {
+      value = value < 0 ? 256 + value : value - 256
+    }
     this.binary[this.writeOffset++] = value
   }
 
@@ -286,9 +290,11 @@ class BinaryStream {
    * @returns {number}
    */
   public readUInt8(): number {
-    const value = this.binary[this.readOffset++] || 0
+    let value = this.binary[this.readOffset++] || 0
 
-    if (value < 0 || value > 255) return null
+    if (value < 0 || value > 255) {
+      value = value < 0 ? 256 + value : value - 256
+    }
 
     return value
   }
@@ -298,7 +304,9 @@ class BinaryStream {
    * @param value 
    */
   public writeUInt8(value: number): void {
-    if (value < 0 || value > 255) throw Error('Value must be between 0 and 255')
+    if (value < 0 || value > 255) {
+      value = value < 0 ? 256 + value : value - 256
+    }
     this.binary[this.writeOffset++] = value
   }
 
@@ -307,11 +315,13 @@ class BinaryStream {
    * @returns {number}
    */
   public readInt16(endian: Endianness = Endianness.Big): number {
-    const value = endian === Endianness.Big
+    let value = endian === Endianness.Big
       ? this.readByte() << 8 | this.readByte()
       : this.readByte() | this.readByte() << 8
 
-    if (value < -32768 || value > 32767) return null
+    if (value < -32768 || value > 32767) {
+      value = value < 0 ? 65536 + value : value - 65536
+    }
 
     return value
   }
@@ -321,7 +331,9 @@ class BinaryStream {
    * @param value 
    */
   public writeInt16(value: number, endian: Endianness = Endianness.Big): void {
-    if (value < -32768 || value > 32767) throw Error('Value must be between -32768 and 32767')
+    if (value < -32768 || value > 32767) {
+      value = value < 0 ? 65536 + value : value - 65536
+    }
     if (endian === Endianness.Big) {
       this.writeByte(value >> 8)
       this.writeByte(value & 0xFF)
@@ -336,11 +348,13 @@ class BinaryStream {
    * @returns {number}
    */
   public readUInt16(endian: Endianness = Endianness.Big): number {
-    const value = endian === Endianness.Big
+    let value = endian === Endianness.Big
       ? this.readByte() << 8 | this.readByte()
       : this.readByte() | this.readByte() << 8
 
-    if (value < 0 || value > 65535) return null
+    if (value < 0 || value > 65535) {
+      value = value < 0 ? 65536 + value : value - 65536
+    }
 
     return value
   }
@@ -350,7 +364,9 @@ class BinaryStream {
    * @param value 
    */
   public writeUInt16(value: number, endian: Endianness = Endianness.Big): void {
-    if (value < 0 || value > 65535) throw Error('Value must be between 0 and 65535')
+    if (value < 0 || value > 65535) {
+      value = value < 0 ? 65536 + value : value - 65536
+    }
     if (endian === Endianness.Big) {
       this.writeByte(value >> 8)
       this.writeByte(value & 0xFF)
@@ -365,7 +381,7 @@ class BinaryStream {
   * @returns {number}
   */
   public readInt24(endian: Endianness = Endianness.Big): number {
-    const value = endian === Endianness.Big
+    let value = endian === Endianness.Big
       ? this.readByte() << 16 |
         this.readByte() << 8 |
         this.readByte()
@@ -373,7 +389,9 @@ class BinaryStream {
         this.readByte() << 8 |
         this.readByte() << 16
 
-    if (value < -8388608 || value > 8388607) return null
+    if (value < -8388608 || value > 8388607) {
+      value = value < 0 ? 16777216 + value : value - 16777216
+    }
 
     return value
   }
@@ -383,7 +401,9 @@ class BinaryStream {
    * @param value 
    */
   public writeInt24(value: number, endian: Endianness = Endianness.Big): void {
-    if (value < -8388608 || value > 8388607) throw Error('Value must be between -8388608 and 8388607')
+    if (value < -8388608 || value > 8388607) {
+      value = value < 0 ? 16777216 + value : value - 16777216
+    }
     if (endian === Endianness.Big) {
       this.writeByte(value >> 16)
       this.writeByte(value >> 8)
@@ -400,7 +420,7 @@ class BinaryStream {
    * @returns {number}
    */
   public readUInt24(endian: Endianness = Endianness.Big): number {
-    const value = endian === Endianness.Big
+    let value = endian === Endianness.Big
       ? this.readByte() << 16 |
         this.readByte() << 8 |
         this.readByte()
@@ -408,7 +428,9 @@ class BinaryStream {
         this.readByte() << 8 |
         this.readByte() << 16
 
-    if (value < 0 || value > 16777215) return null
+    if (value < 0 || value > 16777215) {
+      value = value < 0 ? 16777216 + value : value - 16777216
+    }
 
     return value
   }
@@ -418,7 +440,9 @@ class BinaryStream {
    * @param value 
    */
   public writeUInt24(value: number, endian: Endianness = Endianness.Big): void {
-    if (value < 0 || value > 16777215) throw Error('Value must be between 0 and 16777215')
+    if (value < 0 || value > 16777215) {
+      value = value < 0 ? 16777216 + value : value - 16777216
+    }
     if (endian === Endianness.Big) {
       this.writeByte(value >> 16)
       this.writeByte(value >> 8)
@@ -435,7 +459,7 @@ class BinaryStream {
    * @returns {number}
    */
   public readInt32(endian: Endianness = Endianness.Big): number {
-    const value = endian === Endianness.Big
+    let value = endian === Endianness.Big
       ? this.readByte() << 24 |
         this.readByte() << 16 |
         this.readByte() << 8 |
@@ -445,7 +469,9 @@ class BinaryStream {
         this.readByte() << 16 |
         this.readByte() << 24
 
-    if (value < -2147483648 || value > 2147483647) return null
+    if (value < -2147483648 || value > 2147483647) {
+      value = value < 0 ? 4294967296 + value : value - 4294967296
+    }
 
     return value
   }
@@ -455,7 +481,9 @@ class BinaryStream {
    * @param value 
    */
   public writeInt32(value: number, endian: Endianness = Endianness.Big): void {
-    if (value < -2147483648 || value > 2147483647) throw Error('Value must be between -2147483648 and 2147483647')
+    if (value < -2147483648 || value > 2147483647) {
+      value = value < 0 ? 4294967296 + value : value - 4294967296
+    }
     if (endian === Endianness.Big) {
       this.writeByte(value >> 24)
       this.writeByte(value >> 16)
@@ -474,7 +502,7 @@ class BinaryStream {
    * @returns {number}
    */
   public readUInt32(endian: Endianness = Endianness.Big): number {
-    const value = endian === Endianness.Big
+    let value = endian === Endianness.Big
       ? this.readByte() << 24 |
         this.readByte() << 16 |
         this.readByte() << 8 |
@@ -484,7 +512,9 @@ class BinaryStream {
         this.readByte() << 16 |
         this.readByte() << 24
 
-    if (value < 0 || value > 4294967295) return null
+    if (value < 0 || value > 4294967295) {
+      value = value < 0 ? 4294967296 + value : value - 4294967296
+    }
 
     return value
   }
@@ -494,7 +524,9 @@ class BinaryStream {
    * @param value 
    */
   public writeUInt32(value: number, endian: Endianness = Endianness.Big): void {
-    if (value < 0 || value > 4294967295) throw Error('Value must be between 0 and 4294967295')
+    if (value < 0 || value > 4294967295) {
+      value = value < 0 ? 4294967296 + value : value - 4294967296
+    }
     if (endian === Endianness.Big) {
       this.writeByte(value >> 24)
       this.writeByte(value >> 16)
@@ -513,7 +545,7 @@ class BinaryStream {
    * @returns {bigint}
    */
   public readInt64(endian: Endianness = Endianness.Big): bigint {
-    const value = endian === Endianness.Big
+    let value = endian === Endianness.Big
       ? BigInt(this.readByte()) << 56n |
         BigInt(this.readByte()) << 48n |
         BigInt(this.readByte()) << 40n |
@@ -531,8 +563,9 @@ class BinaryStream {
         BigInt(this.readByte()) << 48n |
         BigInt(this.readByte()) << 56n
     
-    // TODO: Fix this
-    //if (value < -9223372036854775808n || value > 9223372036854775807n) return null
+    if (value < -9223372036854775808n || value > 9223372036854775807n) {
+      value = value < 0 ? 18446744073709551616n + value : value - 18446744073709551616n
+    }
 
     return value
   }
@@ -542,7 +575,9 @@ class BinaryStream {
    * @param value 
    */
   public writeInt64(value: bigint, endian: Endianness = Endianness.Big): void {
-    if (value < -9223372036854775808n || value > 9223372036854775807n) throw Error('Value must be between -9223372036854775808 and 9223372036854775807')
+    if (value < -9223372036854775808n || value > 9223372036854775807n) {
+      value = value < 0 ? 18446744073709551616n + value : value - 18446744073709551616n
+    }
     if (endian === Endianness.Big) {
       this.writeByte(Number(value >> 56n))
       this.writeByte(Number(value >> 48n))
@@ -569,7 +604,7 @@ class BinaryStream {
    * @returns {bigint}
    */
   public readUInt64(endian: Endianness = Endianness.Big): bigint {
-    const value = endian === Endianness.Big
+    let value = endian === Endianness.Big
       ? BigInt(this.readByte()) << 56n |
         BigInt(this.readByte()) << 48n |
         BigInt(this.readByte()) << 40n |
@@ -587,7 +622,9 @@ class BinaryStream {
         BigInt(this.readByte()) << 48n |
         BigInt(this.readByte()) << 56n
 
-    if (value < 0n || value > 18446744073709551615n) return null
+    if (value < 0n || value > 18446744073709551615n) {
+      value = value < 0n ? 18446744073709551616n + value : value - 18446744073709551616n
+    }
 
     return value
   }
@@ -597,7 +634,9 @@ class BinaryStream {
    * @param value 
    */
   public writeUInt64(value: bigint, endian: Endianness = Endianness.Big): void {
-    if (value < 0n || value > 18446744073709551615n) throw Error('Value must be between 0 and 18446744073709551615')
+    if (value < 0n || value > 18446744073709551615n) {
+      value = value < 0n ? 18446744073709551616n + value : value - 18446744073709551616n
+    }
     if (endian === Endianness.Big) {
       this.writeByte(Number(value >> 56n))
       this.writeByte(Number(value >> 48n))
@@ -624,11 +663,13 @@ class BinaryStream {
    * @returns {number}
    */
   public readShort(endian: Endianness = Endianness.Big): number {
-    const value = endian === Endianness.Big
+    let value = endian === Endianness.Big
       ? this.readByte() << 8 | this.readByte()
       : this.readByte() | this.readByte() << 8
 
-    if (value < -32768 || value > 32767) return null
+    if (value < -32768 || value > 32767) {
+      value = value < 0 ? 65536 + value : value - 65536
+    }
 
     return value
   }
@@ -638,7 +679,9 @@ class BinaryStream {
    * @param value 
    */
   public writeShort(value: number, endian: Endianness = Endianness.Big): void {
-    if (value < -32768 || value > 32767) throw Error('Value must be between -32768 and 32767')
+    if (value < -32768 || value > 32767) {
+      value = value < 0 ? 65536 + value : value - 65536
+    }
     if (endian === Endianness.Big) {
       this.writeByte(value >> 8)
       this.writeByte(value & 0xFF)
@@ -653,11 +696,13 @@ class BinaryStream {
    * @returns {number}
    */
   public readUShort(endian: Endianness = Endianness.Big): number {
-    const value = endian === Endianness.Big
+    let value = endian === Endianness.Big
       ? this.readByte() << 8 | this.readByte()
       : this.readByte() | this.readByte() << 8
 
-    if (value < 0 || value > 65535) return null
+    if (value < 0 || value > 65535) {
+      value = value < 0 ? 65536 + value : value - 65536
+    }
 
     return value
   }
@@ -667,7 +712,9 @@ class BinaryStream {
    * @param value 
    */
   public writeUShort(value: number, endian: Endianness = Endianness.Big): void {
-    if (value < 0 || value > 65535) throw Error('Value must be between 0 and 65535')
+    if (value < 0 || value > 65535) {
+      value = value < 0 ? 65536 + value : value - 65536
+    }
     if (endian === Endianness.Big) {
       this.writeByte(value >> 8)
       this.writeByte(value & 0xFF)
@@ -682,7 +729,7 @@ class BinaryStream {
    * @returns {bigint}
    */
   public readLong(endian: Endianness = Endianness.Big): bigint {
-    const value = endian === Endianness.Big
+    let value = endian === Endianness.Big
       ? BigInt(this.readByte()) << 56n |
         BigInt(this.readByte()) << 48n |
         BigInt(this.readByte()) << 40n |
@@ -700,8 +747,9 @@ class BinaryStream {
         BigInt(this.readByte()) << 48n |
         BigInt(this.readByte()) << 56n
 
-    // TODO: Fix this
-    //if (value < -9223372036854775808n || value > 9223372036854775807n) return null
+    if (value < -9223372036854775808n || value > 9223372036854775807n) {
+      value = value < 0n ? 18446744073709551616n + value : value - 18446744073709551616n
+    }
 
     return value
   }
@@ -711,7 +759,9 @@ class BinaryStream {
    * @param value 
    */
   public writeLong(value: bigint, endian: Endianness = Endianness.Big): void {
-    if (value < -9223372036854775808n || value > 9223372036854775807n) throw Error('Value must be between -9223372036854775808 and 9223372036854775807')
+    if (value < -9223372036854775808n || value > 9223372036854775807n) {
+      value = value < 0n ? 18446744073709551616n + value : value - 18446744073709551616n
+    }
     if (endian === Endianness.Big) {
       this.writeByte(Number(value >> 56n))
       this.writeByte(Number(value >> 48n))
@@ -738,7 +788,7 @@ class BinaryStream {
    * @returns {bigint}
    */
   public readULong(endian: Endianness = Endianness.Big): bigint {
-    const value = endian === Endianness.Big
+    let value = endian === Endianness.Big
       ? BigInt(this.readByte()) << 56n |
         BigInt(this.readByte()) << 48n |
         BigInt(this.readByte()) << 40n |
@@ -756,7 +806,9 @@ class BinaryStream {
         BigInt(this.readByte()) << 48n |
         BigInt(this.readByte()) << 56n
 
-    if (value < 0n || value > 18446744073709551615n) return null
+    if (value < 0n || value > 18446744073709551615n) {
+      value = value < 0n ? 18446744073709551616n + value : value - 18446744073709551616n
+    }
 
     return value
   }
@@ -766,7 +818,9 @@ class BinaryStream {
    * @param value 
    */
   public writeULong(value: bigint, endian: Endianness = Endianness.Big): void {
-    if (value < 0n || value > 18446744073709551615n) throw Error('Value must be between 0 and 18446744073709551615')
+    if (value < 0n || value > 18446744073709551615n) {
+      value = value < 0n ? 18446744073709551616n + value : value - 18446744073709551616n
+    }
     if (endian === Endianness.Big) {
       this.writeByte(Number(value >> 56n))
       this.writeByte(Number(value >> 48n))
