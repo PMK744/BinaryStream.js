@@ -1,15 +1,15 @@
-// import type { BinaryStream } from '../../BinaryStream'
-// import { DataType } from '../DataType'
+import type { BinaryStream } from '../../BinaryStream'
+import { DataType } from '../DataType'
 
-// /**
-//  * Reads or writes a 64 bit ( 8 bytes ) signed zigzag encoded variable length integer ( -9223372036854775808 to 9223372036854775807 )
-//  */
-// export class VarLong extends DataType {
-//   public static read(stream: BinaryStream): bigint {
-//     return stream.readVarLong()
-//   }
+/**
+ * Reads or writes a 64 bit ( 8 bytes ) unsigned variable length integer ( -9223372036854775808 to 9223372036854775807 )
+ */
+export class VarLong extends DataType {
+  public static read(stream: BinaryStream): bigint {
+    return stream.readVarLong()
+  }
 
-//   public static write(stream: BinaryStream, value: bigint): void {
-//     stream.writeVarLong(value)
-//   }
-// }
+  public static write(stream: BinaryStream, value: bigint): void {
+    stream.writeVarLong(value)
+  }
+}

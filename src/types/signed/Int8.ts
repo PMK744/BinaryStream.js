@@ -1,5 +1,4 @@
 import type { BinaryStream } from '../../BinaryStream'
-import { Endianness } from '../../Endianness'
 import { DataType } from '../DataType'
 
 /**
