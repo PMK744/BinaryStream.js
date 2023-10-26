@@ -5,6 +5,8 @@ export * from './String'
 export * from './LittleString'
 export * from './BigString'
 export * from './Float'
+export * from './FL32'
+export * from './Uuid'
 
 export * from './signed'
 export * from './unsigned'

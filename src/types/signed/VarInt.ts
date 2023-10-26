@@ -1,15 +1,15 @@
-import type { BinaryStream } from '../../BinaryStream'
-import { DataType } from '../DataType'
+// import type { BinaryStream } from '../../BinaryStream'
+// import { DataType } from '../DataType'
 
-/**
- * Reads or writes a 32 bit ( 4 bytes ) signed zigzag encoded variable length integer ( -2147483648 to 2147483647 )
- */
-export class VarInt extends DataType {
-  public static read(stream: BinaryStream): number {
-    return stream.readVarInt()
-  }
+// /**
+//  * Reads or writes a 32 bit ( 4 bytes ) signed zigzag encoded variable length integer ( -2147483648 to 2147483647 )
+//  */
+// export class VarInt extends DataType {
+//   public static read(stream: BinaryStream): number {
+//     return stream.readVarInt()
+//   }
 
-  public static write(stream: BinaryStream, value: number): void {
-    stream.writeVarInt(value)
-  }
-}
+//   public static write(stream: BinaryStream, value: number): void {
+//     stream.writeVarInt(value)
+//   }
+// }
