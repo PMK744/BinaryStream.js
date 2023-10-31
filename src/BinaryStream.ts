@@ -179,8 +179,9 @@ class BinaryStream {
    * @param value 
    */
   public writeLittleString(value: string): void {
-    this.writeUInt32(value.length, Endianness.Little)
-    this.write(Buffer.from(value))
+    const buffer = Buffer.from(value, 'ascii')
+    this.writeUInt32(buffer.byteLength, Endianness.Little)
+    this.write(buffer)
   }
 
   /**
@@ -199,8 +200,9 @@ class BinaryStream {
    * @param value 
    */
   public writeBigString(value: string): void {
-    this.writeVarInt(value.length)
-    this.write(Buffer.from(value))
+    const buffer = Buffer.from(value, 'utf8')
+    this.writeVarInt(buffer.byteLength)
+    this.write(buffer)
   }
 
   /**
